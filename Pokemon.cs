@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -31,5 +32,25 @@ namespace GottaCatchEmAll
         public string TypeName { get; set; }
         [JsonPropertyName("url")]
         public string Url { get; set; }
+    }
+
+    public class PokemonDamageTypes
+    {
+        public HashSet<string> WeakTypes { get; set; }
+        public HashSet<string> StrongTypes { get; set; }
+    }
+
+    public class PokemonAttributes
+    {
+        public string Name { get; set; }
+        public List<PokemonType> PokemonTypes { get; set; }
+        public PokemonDamageTypes DamageTypes { get; set; }
+        public PokemonAttributes(string pokeName, List<PokemonType> pokeTypes, PokemonDamageTypes pokeDamageTypes)
+        {
+            Name = pokeName;
+            PokemonTypes = pokeTypes;
+            DamageTypes = pokeDamageTypes;
+            
+        }
     }
 }

@@ -1,19 +1,39 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using GottaCatchEmAll;
-using System.Net.Http.Headers;
 
-using HttpClient client = new();
-client.DefaultRequestHeaders.Accept.Clear();
-client.DefaultRequestHeaders.Accept.Add(
-    new MediaTypeWithQualityHeaderValue("application/json"));
+PokemonAttributes pokemon = await GetData.GetPokemon();
 
-var baseURL = "https://pokeapi.co/api/v2/";
+Console.WriteLine("Pokemon found!!\n");
 
-Console.Write("Enter your Pokemon: ");
+Console.WriteLine("Name: {0}", pokemon.Name.ToUpper());
 
-var pokemon = Console.ReadLine();
+Console.Write("\nType: ");
 
+int i = 0;
+foreach (var type in pokemon.PokemonTypes)
+{
+    
+    if (pokemon.PokemonTypes.Count == 2 && i == 0)
+    {
+        Console.Write("{0}/", type.TypeName.ToString().ToUpper());
+        i++;
+    } else
+    {
+        Console.Write("{0}", type.TypeName.ToString().ToUpper());
+    }
+    
+}
 
-List<PokemonType> pokemonTypes = await GetData.GetPokemonTypes(client, baseURL, pokemon);
+Console.Write("\n\nStrengths: ");
 
-await GetData.GetTypeRelations(client, pokemonTypes);
+foreach (var strong in pokemon.DamageTypes.StrongTypes)
+{
+    Console.Write("{0} ", strong.ToString().ToUpper());
+}
+
+Console.Write("\n\nWeaknesses: ");
+
+foreach (var weak in pokemon.DamageTypes.WeakTypes)
+{
+    Console.Write("{0} ", weak.ToString().ToUpper());
+}

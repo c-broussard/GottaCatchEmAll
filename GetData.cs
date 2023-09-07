@@ -15,34 +15,76 @@ namespace GottaCatchEmAll
 {
     internal class GetData
     {
-        //Returns list of pokemon type(s) for the pokemon that is entered
+        //Kickoffs the processes to retrieve pokemon data.
+        internal static async Task<PokemonAttributes> GetPokemon()
+        {
+            //Prompts user to enter a pokemon.
+            string pokemonName = "";
+            do
+            {
+                Console.Write("Enter a Pokemon: ");
+
+                pokemonName = Console.ReadLine().Trim();
+
+                if (string.IsNullOrWhiteSpace(pokemonName) || pokemonName.Any(char.IsDigit))
+                {
+                    Console.WriteLine("Please enter a valid Pokemon name.");
+                }
+
+            } while (string.IsNullOrWhiteSpace(pokemonName) || pokemonName.Any(char.IsDigit));
+
+            //Initialize HttpClient (could be class or dependency injection)
+            using HttpClient client = new();
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var baseURL = "https://pokeapi.co/api/v2/";
+
+            //Gets data needed to build pokemon attributes. 
+            //If pokemon is not found, exception is caught and user is notified.
+            try {
+                List<PokemonType> pokemonTypes = await GetPokemonTypes(client, baseURL, pokemonName);
+                PokemonDamageTypes pokemonDamageTypes = await GetData.GetTypeRelations(client, pokemonTypes);
+                PokemonAttributes pokemon = new PokemonAttributes(pokemonName, pokemonTypes, pokemonDamageTypes);
+                return pokemon;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Pokemon was not found. Please enter a valid Pokemon name.");
+                return null;
+            }; 
+        }
+
+        //Returns list of pokemon type(s) for the pokemon that is entered.
         internal static async Task<List<PokemonType>> GetPokemonTypes(HttpClient client, string baseURL, string incomingPokemon)
         {
             var url = baseURL + string.Format("/pokemon/{0}", incomingPokemon.ToLower()); 
 
             await using Stream stream = 
-                await client.GetStreamAsync(url);
-
+                            await client.GetStreamAsync(url);
+            
             var pokemon = 
                 await JsonSerializer.DeserializeAsync<Pokemon>(stream);
 
             List<PokemonType> typesList = new List<PokemonType>();
 
             for (int i = 0; i < pokemon.Slots.Count; i++)
-            {
-
-                typesList.Add(pokemon.Slots[i].PokemonType);
-                
+            { 
+                typesList.Add(pokemon.Slots[i].PokemonType);  
             }
             return typesList;
             
         }
 
-        //Returns all type relations for the list of types provided
-        internal static async Task GetTypeRelations(HttpClient client, List<PokemonType> pokemonTypes)
+        //Returns all type damage relations for the list of types provided
+        internal static async Task<PokemonDamageTypes> GetTypeRelations(HttpClient client, List<PokemonType> pokemonTypes)
         {
-            List<string> strongTypes = new List<string>();
-            List<string> weakTypes = new List<string>();
+            PokemonDamageTypes pokemonDamageTypes = new PokemonDamageTypes();
+
+            //Hashsets used to only include distinct values.
+            HashSet<string> strongTypes = new HashSet<string>();
+            HashSet<string> weakTypes = new HashSet<string>();
 
             //Get the type relations for each pokemon type
             for (int i = 0; i < pokemonTypes.Count; i++)
@@ -53,14 +95,16 @@ namespace GottaCatchEmAll
                 var typeRelations = 
                     await JsonSerializer.DeserializeAsync<TypeRelations>(stream);
 
-                //Consider each damage type relations for damage to and damage from
+                
+                //Considers each damage type relations for damage to and damage from.
+                //Should be broken out into smaller tasks.
                 foreach (var property in typeRelations.DamageRelations.GetType().GetProperties())
                 {
                     object[] propertyValues = property.GetValue(typeRelations.DamageRelations, null) as object[];
 
                     object currentObj = null;
 
-                    
+                    //Builds a list of weak types and strong types.
                     for (int j = 0; j < propertyValues.Length; j++)
                     {
                         currentObj = propertyValues[j].GetType().GetProperty("Name").GetValue(propertyValues[j], null);
@@ -83,8 +127,12 @@ namespace GottaCatchEmAll
                         
                     }
                 }
-                
             }
+            pokemonDamageTypes.WeakTypes = weakTypes;
+            pokemonDamageTypes.StrongTypes = strongTypes;
+
+            return pokemonDamageTypes;
+
             
         }
     }
