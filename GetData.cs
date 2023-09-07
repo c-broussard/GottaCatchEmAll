@@ -47,6 +47,7 @@ namespace GottaCatchEmAll
                 List<PokemonType> pokemonTypes = await GetPokemonTypes(client, baseURL, pokemonName);
                 PokemonDamageTypes pokemonDamageTypes = await GetData.GetTypeRelations(client, pokemonTypes);
                 PokemonAttributes pokemon = new PokemonAttributes(pokemonName, pokemonTypes, pokemonDamageTypes);
+                Console.WriteLine("Pokemon found!!\n");
                 return pokemon;
             }
             catch (Exception e)
