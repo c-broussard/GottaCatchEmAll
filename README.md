@@ -23,7 +23,7 @@ GottaCatchEmAll is a console application that uses the [PokeApi](https://pokeapi
 
 ### Prerequisites
 
-No prerequisites required to run the application.
+- .NET SDK 6.0 or later.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
