@@ -19,23 +19,39 @@ namespace GottaCatchEmAll
         public DamageRelations DamageRelations { get; set; }
     }
 
+    //public class DamageRelations
+    //{
+    //    [JsonPropertyName("no_damage_to")]
+    //    public NoDamageToTypes[] NoDamageToTypes { get; set; }
+    //    [JsonPropertyName("half_damage_to")]
+    //    public HalfDamageToTypes[] HalfDamageToTypes { get; set; }
+    //    [JsonPropertyName("double_damage_to")]
+    //    public DoubleDamageToTypes[] DoubleDamageToTypes { get; set; }
+    //    [JsonPropertyName("no_damage_from")]
+    //    public NoDamageFromTypes[] NoDamageFromTypes { get; set; }
+    //    [JsonPropertyName("half_damage_from")]
+    //    public HalfDamageFromTypes[] HalfDamageFromTypes { get; set; }
+    //    [JsonPropertyName("double_damage_from")]
+    //    public DoubleDamageFromTypes[] DoubleDamageFromTypes { get; set; }
+    //}
+
     public class DamageRelations
     {
         [JsonPropertyName("no_damage_to")]
-        public NoDamageToTypes[] NoDamageToTypes { get; set; }
+        public DamageTypes[] NoDamageToTypes { get; set; }
         [JsonPropertyName("half_damage_to")]
-        public HalfDamageToTypes[] HalfDamageToTypes { get; set; }
+        public DamageTypes[] HalfDamageToTypes { get; set; }
         [JsonPropertyName("double_damage_to")]
-        public DoubleDamageToTypes[] DoubleDamageToTypes { get; set; }
+        public DamageTypes[] DoubleDamageToTypes { get; set; }
         [JsonPropertyName("no_damage_from")]
-        public NoDamageFromTypes[] NoDamageFromTypes { get; set; }
+        public DamageTypes[] NoDamageFromTypes { get; set; }
         [JsonPropertyName("half_damage_from")]
-        public HalfDamageFromTypes[] HalfDamageFromTypes { get; set; }
+        public DamageTypes[] HalfDamageFromTypes { get; set; }
         [JsonPropertyName("double_damage_from")]
-        public DoubleDamageFromTypes[] DoubleDamageFromTypes { get; set; }
+        public DamageTypes[] DoubleDamageFromTypes { get; set; }
     }
 
-    public class NoDamageToTypes
+    public class DamageTypes
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }
@@ -43,43 +59,51 @@ namespace GottaCatchEmAll
         public string Url { get; set; }
     }
 
-    public class HalfDamageToTypes
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-    }
+    //public class NoDamageToTypes
+    //{
+    //    [JsonPropertyName("name")]
+    //    public string Name { get; set; }
+    //    [JsonPropertyName("url")]
+    //    public string Url { get; set; }
+    //}
 
-    public class DoubleDamageToTypes
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-    }
+    //public class HalfDamageToTypes
+    //{
+    //    [JsonPropertyName("name")]
+    //    public string Name { get; set; }
+    //    [JsonPropertyName("url")]
+    //    public string Url { get; set; }
+    //}
 
-    public class NoDamageFromTypes
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-    }
+    //public class DoubleDamageToTypes
+    //{
+    //    [JsonPropertyName("name")]
+    //    public string Name { get; set; }
+    //    [JsonPropertyName("url")]
+    //    public string Url { get; set; }
+    //}
 
-    public class HalfDamageFromTypes
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-    }
+    //public class NoDamageFromTypes
+    //{
+    //    [JsonPropertyName("name")]
+    //    public string Name { get; set; }
+    //    [JsonPropertyName("url")]
+    //    public string Url { get; set; }
+    //}
 
-    public class DoubleDamageFromTypes
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-    }
+    //public class HalfDamageFromTypes
+    //{
+    //    [JsonPropertyName("name")]
+    //    public string Name { get; set; }
+    //    [JsonPropertyName("url")]
+    //    public string Url { get; set; }
+    //}
+
+    //public class DoubleDamageFromTypes
+    //{
+    //    [JsonPropertyName("name")]
+    //    public string Name { get; set; }
+    //    [JsonPropertyName("url")]
+    //    public string Url { get; set; }
+    //}
 }

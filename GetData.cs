@@ -18,6 +18,17 @@ namespace GottaCatchEmAll
         //Kickoffs the processes to retrieve pokemon data.
         internal static async Task<PokemonAttributes> GetPokemon()
         {
+
+            //Initialize HttpClient (could be class or dependency injection)
+            using HttpClient client = new();
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var baseURL = "https://pokeapi.co/api/v2/";
+
+            List<PokemonType> pokemonTypes = new List<PokemonType>();
+
             //Prompts user to enter a pokemon.
             string pokemonName = "";
             do
@@ -30,21 +41,16 @@ namespace GottaCatchEmAll
                 {
                     Console.WriteLine("Please enter a valid Pokemon name.");
                 }
+                pokemonTypes = await GetPokemonTypes(client, baseURL, pokemonName);
 
-            } while (string.IsNullOrWhiteSpace(pokemonName) || pokemonName.Any(char.IsDigit));
+            } while (string.IsNullOrWhiteSpace(pokemonName) || pokemonName.Any(char.IsDigit) || pokemonTypes == null);
 
-            //Initialize HttpClient (could be class or dependency injection)
-            using HttpClient client = new();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var baseURL = "https://pokeapi.co/api/v2/";
+            
 
             //Gets data needed to build pokemon attributes. 
             //If pokemon is not found, exception is caught and user is notified.
             try {
-                List<PokemonType> pokemonTypes = await GetPokemonTypes(client, baseURL, pokemonName);
+                
                 PokemonDamageTypes pokemonDamageTypes = await GetData.GetTypeRelations(client, pokemonTypes);
                 PokemonAttributes pokemon = new PokemonAttributes(pokemonName, pokemonTypes, pokemonDamageTypes);
                 Console.WriteLine("Pokemon found!!\n");
@@ -60,21 +66,33 @@ namespace GottaCatchEmAll
         //Returns list of pokemon type(s) for the pokemon that is entered.
         internal static async Task<List<PokemonType>> GetPokemonTypes(HttpClient client, string baseURL, string incomingPokemon)
         {
-            var url = baseURL + string.Format("/pokemon/{0}", incomingPokemon.ToLower()); 
+            var url = baseURL + string.Format("/pokemon/{0}", incomingPokemon.ToLower());
 
-            await using Stream stream = 
+
+            try
+            {
+                await using Stream stream =
                             await client.GetStreamAsync(url);
-            
-            var pokemon = 
+
+                var pokemon =
                 await JsonSerializer.DeserializeAsync<Pokemon>(stream);
 
-            List<PokemonType> typesList = new List<PokemonType>();
+                List<PokemonType> typesList = new List<PokemonType>();
 
-            for (int i = 0; i < pokemon.Slots.Count; i++)
-            { 
-                typesList.Add(pokemon.Slots[i].PokemonType);  
+                for (int i = 0; i < pokemon.Slots.Count; i++)
+                {
+                    typesList.Add(pokemon.Slots[i].PokemonType);
+                }
+                return typesList;
+
+            } catch (Exception e)
+            {
+                Console.WriteLine("Pokemon was not found. Please enter a valid Pokemon name.");
+                return null;
             }
-            return typesList;
+            
+            
+            
             
         }
 
@@ -99,28 +117,28 @@ namespace GottaCatchEmAll
                 
                 //Considers each damage type relations for damage to and damage from.
                 //Should be broken out into smaller tasks.
-                foreach (var property in typeRelations.DamageRelations.GetType().GetProperties())
+                foreach (var damageRelation in typeRelations.DamageRelations.GetType().GetProperties())
                 {
-                    object[] propertyValues = property.GetValue(typeRelations.DamageRelations, null) as object[];
+                    DamageTypes[] damageRelationsValues = (DamageTypes[])damageRelation.GetValue(typeRelations.DamageRelations, null);
 
-                    object currentObj = null;
+                    var currentType = "";
 
                     //Builds a list of weak types and strong types.
-                    for (int j = 0; j < propertyValues.Length; j++)
+                    for (int j = 0; j < damageRelationsValues.Length; j++)
                     {
-                        currentObj = propertyValues[j].GetType().GetProperty("Name").GetValue(propertyValues[j], null);
+                        currentType = damageRelationsValues[j].GetType().GetProperty("Name").GetValue(damageRelationsValues[j], null).ToString();
                         
-                        switch (property.Name)
+                        switch (damageRelation.Name)
                         {
                             case "NoDamageToTypes":
                             case "HalfDamageToTypes":
                             case "DoubleDamageFromTypes":
-                                weakTypes.Add(currentObj.ToString());
+                                weakTypes.Add(currentType.ToString());
                                 break;
                             case "DoubleDamageToTypes":
                             case "NoDamageFromTypes":
                             case "HalfDamageFromTypes":
-                                strongTypes.Add(currentObj.ToString());
+                                strongTypes.Add(currentType.ToString());
                                 break;
                             default:
                                 break;

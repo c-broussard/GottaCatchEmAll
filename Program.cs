@@ -38,6 +38,6 @@ if (pokemon != null)
     {
         Console.Write("{0} ", weak.ToString().ToUpper());
     }
-}
+} 
 
 
