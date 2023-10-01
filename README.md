@@ -10,7 +10,7 @@ GottaCatchEmAll is a console application that uses the [PokeApi](https://pokeapi
 ## Getting Started
 
 1. Clone or download this repository to your local machine.
-2. Use
+2. Use your favorite IDE to compile and run the application. Once it's compiled, you can run the application from a command prompt.
 3. Enter a Pokemon name and hit `Enter`. That's it!!
    ```sh
    Enter a Pokemon: Charizard
